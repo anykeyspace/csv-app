@@ -1,0 +1,1 @@
+java -jar csv-app.main.jar "input_data.csv"
