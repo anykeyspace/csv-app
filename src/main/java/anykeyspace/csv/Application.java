@@ -8,43 +8,46 @@ import static anykeyspace.csv.CsvUtils.writeAll;
 
 public class Application {
 
-    private static final int BETRIEBSNR_1 = 0;
-    private static final int BETRIEB_1 = 1;
-    private static final int TIERNR_1 = 2;
-    private static final int PEDNR_1 = 3;
-    private static final int LEERZEILE = 4;
-    private static final int BETRIEBSNR_2 = 5;
-    private static final int BETRIEB_2 = 6;
-    private static final int TIERNR_2 = 7;
-    private static final int PEDNR_2 = 8;
+    private static final String SOURCE_DATA_FILE = "input_for_transferring.csv";
+    private static final String TARGET_DATA_FILE = "output_results.csv";
+    private static final String RESULT_FILE = "result.csv";
 
+    private static final int BETRIEB = 0;
+    private static final int KUHNR = 1;
+    private static final int PEDOMETERNR = 2;
 
     public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
-            System.out.println("Input file name required");
-            return;
+        String sourceDataFile;
+        String targetDataFile;
+        String resultFile;
+        if (args.length < 3) {
+            sourceDataFile = SOURCE_DATA_FILE;
+            targetDataFile = TARGET_DATA_FILE;
+            resultFile = RESULT_FILE;
+        } else {
+            sourceDataFile = args[0];
+            targetDataFile = args[1];
+            resultFile = args[2];
         }
 
-        String inputFilename = args[0];
+        List<String[]> sourceWithHeader = readAll(sourceDataFile);
+        List<String[]> targetWithHeader = readAll(targetDataFile);
 
-        List<String[]> dataWithHeader = readAll(inputFilename);
+        List<String[]> source = sourceWithHeader.subList(1, sourceWithHeader.size());
+        List<String[]> target = targetWithHeader.subList(1, targetWithHeader.size());
 
-        List<String[]> data = dataWithHeader.subList(1, dataWithHeader.size());
-
-        data.forEach(firstTableLine -> {
-            Optional<String[]> foundSecondTableLine = data.stream()
-                    .filter(secondTableLine -> isEquals(firstTableLine, secondTableLine))
+        target.forEach(targetLine -> {
+            Optional<String[]> foundSourceLine = source.stream()
+                    .filter(dataLine -> isEquals(targetLine, dataLine))
                     .findFirst();
-            foundSecondTableLine.ifPresent(line -> firstTableLine[PEDNR_1] = line[PEDNR_2]);
+            foundSourceLine.ifPresent(sourceLine -> targetLine[PEDOMETERNR] = sourceLine[PEDOMETERNR]);
         });
 
-        writeAll(dataWithHeader, "result_" + inputFilename);
+        writeAll(targetWithHeader, resultFile);
     }
 
     private static boolean isEquals(String[] line1, String[] line2) {
-        return line1[BETRIEBSNR_1].equals(line2[BETRIEBSNR_1])
-                && line1[BETRIEB_1].equals(line2[BETRIEB_2])
-                && line1[TIERNR_1].equals(line2[TIERNR_2]);
+        return line1[BETRIEB].equals(line2[BETRIEB])
+                && line1[KUHNR].equals(line2[KUHNR]);
     }
-
 }
