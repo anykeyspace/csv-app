@@ -1,7 +1,6 @@
 package anykeyspace.csv;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+import com.opencsv.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,10 +15,16 @@ public final class CsvUtils {
     private CsvUtils() {
     }
 
-    public static List<String[]> readAll(String filename) throws IOException {
+    public static List<String[]> readAll(String filename, char separator) throws IOException {
         Path path = Paths.get(filename);
         Reader reader = Files.newBufferedReader(path);
-        CSVReader csvReader = new CSVReader(reader);
+        CSVParser parser = new CSVParserBuilder()
+                .withSeparator(separator)
+                .withIgnoreQuotations(true)
+                .build();
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withCSVParser(parser)
+                .build();
         List<String[]> list = csvReader.readAll();
         reader.close();
         csvReader.close();

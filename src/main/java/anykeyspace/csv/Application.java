@@ -17,21 +17,20 @@ public class Application {
     private static final int PEDOMETERNR = 2;
 
     public static void main(String[] args) throws Exception {
-        String sourceDataFile;
-        String targetDataFile;
-        String resultFile;
-        if (args.length < 3) {
-            sourceDataFile = SOURCE_DATA_FILE;
-            targetDataFile = TARGET_DATA_FILE;
-            resultFile = RESULT_FILE;
-        } else {
+        String sourceDataFile = SOURCE_DATA_FILE;
+        String targetDataFile = TARGET_DATA_FILE;
+        String resultFile = RESULT_FILE;
+        char separator = ',';
+
+        if (args.length == 4) {
             sourceDataFile = args[0];
             targetDataFile = args[1];
             resultFile = args[2];
+            separator = args[3].charAt(0);
         }
 
-        List<String[]> sourceWithHeader = readAll(sourceDataFile);
-        List<String[]> targetWithHeader = readAll(targetDataFile);
+        List<String[]> sourceWithHeader = readAll(sourceDataFile, separator);
+        List<String[]> targetWithHeader = readAll(targetDataFile, separator);
 
         List<String[]> source = sourceWithHeader.subList(1, sourceWithHeader.size());
         List<String[]> target = targetWithHeader.subList(1, targetWithHeader.size());
